@@ -18,7 +18,7 @@ end
 Then /I should see "(.*)" before "(.*)"/ do |e1, e2|
   #  ensure that that e1 occurs before e2.
   #  page.body is the entire content of the page as a string.
-  fail "Unimplemented"
+  page.body.index(e1).should < page.body.index(e2)
 end
 
 # Make it easier to express checking or unchecking several boxes at once
@@ -29,10 +29,29 @@ When /I (un)?check the following ratings: (.*)/ do |uncheck, rating_list|
   # HINT: use String#split to split up the rating_list, then
   #   iterate over the ratings and reuse the "When I check..." or
   #   "When I uncheck..." steps in lines 89-95 of web_steps.rb
-  fail "Unimplemented"
+  ratings = rating_list.split(', ')
+  ratings.each do |rating|
+    uncheck ? uncheck("ratings[#{rating}]") : check("ratings[#{rating}]")
+  end
 end
 
 Then /I should see all the movies/ do
   # Make sure that all the movies in the app are visible in the table
-  fail "Unimplemented"
+  expect(page).to have_xpath("//tr", count: 11)
+end
+
+# I should/should not see the following movies
+
+Then /I should see the following movies: (.*)$/ do |movies_list|
+  movies = movies_list.split(', ')
+  movies.each do |movie|
+    expect(page).to have_content(movie)
+  end
+end
+
+Then /I should not see the following movies: (.*)$/ do |movies_list|
+  movies = movies_list.split(', ')
+  movies.each do |movie|
+    expect(page).to have_no_content(movie)
+  end
 end
